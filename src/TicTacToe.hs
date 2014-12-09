@@ -1,5 +1,6 @@
 module TicTacToe where
 
+import Data.List (foldl', intercalate)
 import Data.Array.IArray (Array, listArray, indices, elems, (!), (//))
 
 data Cell = Blank | XX | OO deriving (Enum, Read, Eq, Ord)
@@ -55,3 +56,25 @@ update st pc = st // [pc]
 -- | Return the list of unoccupied positions on the board
 freePos :: State -> [Pos]
 freePos st = filter (\p -> st ! p == Blank) positions
+
+-- | Generate a State given a function from positions to cells
+genState :: (Pos -> Cell) -> State
+genState f = foldl' (\s p -> update s (p, f p)) empty positions
+
+-- | Assumes that X goes first, constructs a game state from a sequence of
+-- positions
+posSeq :: [Pos] -> State
+posSeq ps = foldl' update empty (zip ps (cycle [XX, OO]))
+
+-- | Return a multi-line string representation of the state
+pretty :: State -> String
+pretty st = let chars = prettyOneLine st
+                rows = [ take 3 (drop (3 * i) chars) | i <- [0..2] ]
+            in intercalate "\n" rows
+
+pprint :: State -> IO ()
+pprint = putStrLn . pretty
+
+-- | Return a one-line string representation of the state
+prettyOneLine :: State -> String
+prettyOneLine = concatMap show . cells
