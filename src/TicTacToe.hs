@@ -141,3 +141,12 @@ staticVal state
   | win PlayerX state = 1
   | win PlayerO state = -1
   | otherwise = 0
+
+-- | Minimax valuation
+maximizeTreeVal :: (Ord a) => Tree a -> a
+maximizeTreeVal (Node x []) = x
+maximizeTreeVal (Node _ subs) = maximum . map minimizeTreeVal $ subs
+
+minimizeTreeVal :: (Ord a) => Tree a -> a
+minimizeTreeVal (Node x []) = x
+minimizeTreeVal (Node _ subs) = minimum . map maximizeTreeVal $ subs
