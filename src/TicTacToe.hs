@@ -133,3 +133,11 @@ foldTree f g a (Node b (t:rest)) = g (foldTree f g a t) (foldTree f g a (Node b 
 prune :: Int -> Tree a -> Tree a
 prune 0 t = Node (rootLabel t) []
 prune n t = Node (rootLabel t) (map (prune (n-1)) (subForest t))
+
+-- | Take a game state and return a rought valuation of it. Larger results
+-- are better for X, smaller (esp. negative) results are better for O.
+staticVal :: State -> Int
+staticVal state
+  | win PlayerX state = 1
+  | win PlayerO state = -1
+  | otherwise = 0
