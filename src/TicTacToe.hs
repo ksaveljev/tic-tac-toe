@@ -150,3 +150,11 @@ maximizeTreeVal (Node _ subs) = maximum . map minimizeTreeVal $ subs
 minimizeTreeVal :: (Ord a) => Tree a -> a
 minimizeTreeVal (Node x []) = x
 minimizeTreeVal (Node _ subs) = minimum . map maximizeTreeVal $ subs
+
+maximizeTreeList :: (Ord a) => Tree a -> [a]
+maximizeTreeList (Node x []) = [x]
+maximizeTreeList (Node _ subs) = map (maximum . minimizeTreeList) subs
+
+minimizeTreeList :: (Ord a) => Tree a -> [a]
+minimizeTreeList (Node x []) = [x]
+minimizeTreeList (Node _ subs) = map (minimum . maximizeTreeList) subs
