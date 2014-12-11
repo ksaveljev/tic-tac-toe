@@ -158,3 +158,53 @@ maximizeTreeList (Node _ subs) = map (maximum . minimizeTreeList) subs
 minimizeTreeList :: (Ord a) => Tree a -> [a]
 minimizeTreeList (Node x []) = [x]
 minimizeTreeList (Node _ subs) = map (minimum . maximizeTreeList) subs
+
+mapmin :: (Ord a) => [[a]] -> [a]
+mapmin [] = []
+mapmin (x:xs) = n : omit n xs
+  where
+    n = minimum x
+
+omit :: (Ord a) => a -> [[a]] -> [a]
+omit _ [] = []
+omit n (x:xs)
+  | minleq n x = omit n xs
+  | otherwise = k : omit k xs
+  where
+    k = minimum x
+
+minleq :: (Ord a) => a -> [a] -> Bool
+minleq _ [] = False
+minleq n (x:xs)
+  | x <= n = True
+  | otherwise = minleq n xs
+
+mapmax :: (Ord a) => [[a]] -> [a]
+mapmax [] = []
+mapmax (x:xs) = n : omit' n xs
+  where
+    n = maximum x
+    omit' _ [] = []
+    omit' v (y:ys)
+      | maxleq v y = omit' v ys
+      | otherwise = k : omit' k ys
+      where
+        k = maximum y
+    maxleq _ [] = False
+    maxleq v (y:ys)
+      | y >= v = True
+      | otherwise = maxleq v ys
+
+abMaxList :: (Ord a) => Tree a -> [a]
+abMaxList (Node x []) = [x]
+abMaxList (Node _ subs) = mapmin . map abMinList $ subs
+
+abMinList :: (Ord a) => Tree a -> [a]
+abMinList (Node x []) = [x]
+abMinList (Node _ subs) = mapmax . map abMaxList $ subs
+
+abmax :: State -> Int
+abmax = maximum . abMaxList . fmap staticVal . prune 8 . generate
+
+abmin :: State -> Int
+abmin = minimum . abMinList . fmap staticVal . prune 8 . generate
